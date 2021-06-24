@@ -3,10 +3,11 @@ const scaler = require('minmaxscaler')
 const axios = require('axios')
 const network = new brain.NeuralNetwork();
 
-class TrainnigItem {
-    constructor(input, output) {
-        this.input = input;
-        this.output = output;
+
+function TrainnigItem(input, output) {
+    return {
+        input,
+        output
     }
 }
 
@@ -15,14 +16,24 @@ function getData() {
     .then(res => res.data)
     .then(data => {
         const scaledPrices = scaler.fit_transform(Object.values(data['Time Series (5min)']).map(obj => Number(obj['4. close'])))
-        const trainningData = []
+        const trainingData = []
         
-        for(let i = 0; i < scaledPrices.length - 30; i++) {
-            trainningData.push(new TrainnigItem(scaledPrices.slice(i, i+30), scaledPrices[i+30]))
+        for(let i = 0; i < scaledPrices.length - 35; i++) {
+            trainingData.push(TrainnigItem(scaledPrices.slice(i, i+30), [scaledPrices[i+30]]))
         }
-        network.train(trainningData)
+        network.train(trainingData)
+
+        const scaledPricesMiness = scaledPrices.slice(64, 94)
+        const predictions = []
+        for(let i=0; i<5; i++) {
+            const output = network.run(scaledPricesMiness);
+            predictions.push(...output)
+            scaledPricesMiness.push(output)
+            scaledPricesMiness.shift()
+        }
+        console.log(scaler.inverse_transform(scaledPrices.slice(94)))
+        console.log(scaler.inverse_transform(predictions))
     }).catch(err => console.log(err))
 }
-
 
 getData()
