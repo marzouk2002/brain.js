@@ -1,0 +1,17 @@
+{
+  "name": "brian",
+  "version": "1.0.0",
+  "description": "my first neural network",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "brain.js": "^2.0.0-beta.2",
+    "gl": "^4.9.0",
+    "gyp": "^0.3.0",
+    "node-gyp": "^8.1.0"
+  }
+}
