@@ -19,20 +19,14 @@ function getData() {
         const trainingData = []
         
         for(let i = 0; i < scaledPrices.length - 35; i++) {
-            trainingData.push(TrainnigItem(scaledPrices.slice(i, i+30), [scaledPrices[i+30]]))
+            trainingData.push(TrainnigItem(scaledPrices.slice(i, i+30), scaledPrices.slice(i+30, i+35)))
         }
         network.train(trainingData)
 
         const scaledPricesMiness = scaledPrices.slice(64, 94)
-        const predictions = []
-        for(let i=0; i<5; i++) {
-            const output = network.run(scaledPricesMiness);
-            predictions.push(...output)
-            scaledPricesMiness.push(output)
-            scaledPricesMiness.shift()
-        }
+        const output = network.run(scaledPricesMiness);
         console.log(scaler.inverse_transform(scaledPrices.slice(94)))
-        console.log(scaler.inverse_transform(predictions))
+        console.log(scaler.inverse_transform(output))
     }).catch(err => console.log(err))
 }
 
