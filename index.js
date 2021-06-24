@@ -1,27 +1,28 @@
 const brain = require('brain.js');
 const scaler = require('minmaxscaler')
-
+const axios = require('axios')
 const network = new brain.NeuralNetwork();
 
-// network.train([
-//     { input: [1, 2], output: [1] }, // Team 2 wins
-//     { input: [1, 3], output: [1] }, // Team 3 wins
-//     { input: [2, 3], output: [0] }, // Team 2 wins
-//     { input: [2, 4], output: [1] }, // Team 4 wins
-//     { input: [1, 2], output: [0] }, // Team 1 wins
-//     { input: [1, 3], output: [0] }, // Team 1 wins
-//     { input: [3, 4], output: [0] } // Team 3 wins
-// ]);
-  
-// const output = network.run([1, 4]);
-  
-// console.log(`Prob: ${output}`);
+class TrainnigItem {
+    constructor(input, output) {
+        this.input = input;
+        this.output = output;
+    }
+}
 
-const data = scaler.fit_transform([0,1, 3, 5, 7, 10]);
-const X_test = scaler.transform([1.5, 2.3]);
-const X_test_inverse = scaler.inverse_transform([.6]);
+function getData() {
+    axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=QFC9L0EG01AD6PH5&outputsize=compact")
+    .then(res => res.data)
+    .then(data => {
+        const scaledPrices = scaler.fit_transform(Object.values(data['Time Series (5min)']).map(obj => Number(obj['4. close'])))
+        const trainningData = []
+        
+        for(let i = 0; i < scaledPrices.length - 30; i++) {
+            trainningData.push(new TrainnigItem(scaledPrices.slice(i, i+30), scaledPrices[i+30]))
+        }
+        network.train(trainningData)
+    }).catch(err => console.log(err))
+}
 
-console.log(data);
-console.log(X_test);
-console.log(X_test_inverse);
-console.log(scaler.get_params());
+
+getData()

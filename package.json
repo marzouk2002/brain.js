@@ -9,6 +9,8 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.21.1",
+    "body-parser": "^1.19.0",
     "brain.js": "^2.0.0-beta.2",
     "gl": "^4.9.0",
     "gyp": "^0.3.0",
