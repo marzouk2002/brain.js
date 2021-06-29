@@ -15,7 +15,7 @@ function getData() {
     axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=QFC9L0EG01AD6PH5&outputsize=compact")
     .then(res => res.data)
     .then(data => {
-        const scaledPrices = scaler.fit_transform(Object.values(data['Time Series (5min)']).map(obj => Number(obj['4. close'])))
+        const scaledPrices = scaler.fit_transform(Object.values(data['Time Series (5min)']).map(obj => Number(obj['4. close']))).reverse()
         const trainingData = []
         
         for(let i = 0; i < scaledPrices.length - 35; i++) {

@@ -3,7 +3,7 @@ const scaler = require('minmaxscaler')
 const axios = require('axios')
 const net = new brain.recurrent.LSTMTimeStep({
     inputSize: 1,
-    hiddenLayers: [3],
+    hiddenLayers: [3, 2],
     outputSize: 1
 });
 
@@ -14,8 +14,8 @@ function getData() {
         const scaledPrices = scaler.fit_transform(Object.values(data['historical']).map(obj => Number(obj['close']))).reverse()
         const trainingData = []
         
-        while(scaledPrices.length ) {
-            trainingData.push(scaledPrices.splice(0, 5))
+        for(let i= 0; i<scaledPrices.length-10; i++) {
+            trainingData.push(scaledPrices.slice(i, i+10))
         }
         
         return trainingData
@@ -24,15 +24,17 @@ function getData() {
 
 async function main() {
     const trainingData = await getData()
-    const toPredict = trainingData.splice(trainingData.length - 1)
+    // const toPredict = trainingData.splice(trainingData.length - 1)
     const stats = net.train(trainingData, {
         learningRate: 0.005,
-        errorThresh: 0.008,
+        errorThresh: 0.009,
     })
     // console.log(toPredict)
     console.log(stats)
-    console.log(scaler.inverse_transform(net.forecast(trainingData[trainingData.length - 1], 3)))
-    console.log(scaler.inverse_transform(toPredict[0]))
+    // console.log(trainingData[199])
+    console.log(scaler.inverse_transform(net.forecast(trainingData[trainingData.length-2].slice(5), 10)))
+    // console.log(trainingData[200])
+    console.log(scaler.inverse_transform(trainingData[trainingData.length-1]))
 }
 
 main()
