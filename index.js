@@ -12,20 +12,24 @@ function TrainnigItem(input, output) {
 }
 
 function getData() {
-    axios.get("https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=IBM&interval=5min&apikey=QFC9L0EG01AD6PH5&outputsize=compact")
+    axios.get("https://financialmodelingprep.com/api/v3/historical-price-full/AAPL?apikey=e80ccd292e4265b5ae8afe38cec18713")
     .then(res => res.data)
     .then(data => {
-        const scaledPrices = scaler.fit_transform(Object.values(data['Time Series (5min)']).map(obj => Number(obj['4. close']))).reverse()
+        const scaledPrices = scaler.fit_transform(Object.values(data['historical']).map(obj => Number(obj['close']))).slice(0, 100).reverse()
         const trainingData = []
         
         for(let i = 0; i < scaledPrices.length - 35; i++) {
             trainingData.push(TrainnigItem(scaledPrices.slice(i, i+30), scaledPrices.slice(i+30, i+35)))
         }
-        network.train(trainingData)
+        network.train(trainingData, {
+            learningRate: 0.005,
+            errorThresh: 0.01
+        })
 
-        const scaledPricesMiness = scaledPrices.slice(64, 94)
+        const arrLength = scaledPrices.length
+        const scaledPricesMiness = scaledPrices.slice(arrLength-40, arrLength-5)
         const output = network.run(scaledPricesMiness);
-        console.log(scaler.inverse_transform(scaledPrices.slice(94)))
+        console.log(scaler.inverse_transform(scaledPrices.slice(arrLength-5)))
         console.log(scaler.inverse_transform(output))
     }).catch(err => console.log(err))
 }
