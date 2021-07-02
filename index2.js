@@ -26,7 +26,7 @@ async function main() {
     const trainingData = await getData()
     const stats = net.train(trainingData, {
         learningRate: 0.005,
-        errorThresh: 0.02,
+        errorThresh: 0.02
     })
     console.log(stats)
     console.log(scaler.inverse_transform(trainingData[trainingData.length-2]))
