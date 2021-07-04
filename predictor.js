@@ -12,7 +12,7 @@ function predictor(data) {
 
     const stats = net.train(trainingData, {
         learningRate: 0.005,
-        errorThresh: 0.02,
+        errorThresh: 0.015,
     })
     console.log(stats)
 
