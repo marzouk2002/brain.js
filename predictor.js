@@ -11,8 +11,8 @@ function predictor(data) {
     const trainingData = format(scaler.fit_transform(data))
 
     const stats = net.train(trainingData, {
-        learningRate: 0.005,
-        errorThresh: 0.015,
+        learningRate: 0.003,
+        errorThresh: 0.01,
     })
     console.log(stats)
 
