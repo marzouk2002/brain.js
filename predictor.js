@@ -3,7 +3,7 @@ const scaler = require('minmaxscaler')
 const trainingData = require('./stockData.json').map(obj => obj["close"])
 const net = new brain.recurrent.LSTMTimeStep({
     inputSize: 1,
-    hiddenLayers: [3, 3],
+    hiddenLayers: [3, 2],
     outputSize: 1
 });
 
